@@ -1,7 +1,8 @@
-package main
+package prime
 
 import "fmt"
 
+// This is nonsense. I was playing with numbers for funsies
 func doNonsense() {
 	srcPrimes := []int{
 		2, 3, 5, 7, 11, 13, 17, 19, 23, 29,
@@ -67,7 +68,6 @@ func doNonsense() {
 	var run = true
 
 	var val, last, diff, newP, curNew, skips int
-	// var power int
 
 	var isP, isNew bool
 
