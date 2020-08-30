@@ -1,3 +1,4 @@
-# Code Examples
+[![code](https://forthebadge.com/images/badges/approved-by-veridian-dynamics.svg)](https://github.com/noriah/code)
 
-[![forthebadge](https://forthebadge.com/images/badges/approved-by-veridian-dynamics.svg)](https://forthebadge.com)
+# code
+
