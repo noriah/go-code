@@ -20,12 +20,12 @@ func fizzBuzzShift() {
 		d5 = (1 >> (num % 5))
 
 		// OR the divisbility results, do we have a flag set?
-		if d3|d5 > 0 {
+		if d3|d5 != 0 {
 			// Calculate the beginning
-			start = 4 - (d3 * 4)
+			start = (1 - d3) * 4
 
 			// Calculate the end
-			end = 4 + (d5 * 4)
+			end = (1 + d5) * 4
 
 			// Print it out
 			fmt.Println(fizzBuzz[start:end])
