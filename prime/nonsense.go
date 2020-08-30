@@ -50,7 +50,7 @@ func doNonsense() {
 
 	newPrimesLen := 100
 
-	quitAfterSkips := 10000
+	quitAfterSkips := 1000000000
 
 	allPrimesLen := srcPrimesLen + newPrimesLen
 
@@ -124,6 +124,7 @@ func doNonsense() {
 		newPrimes[curNew] = newP
 		fmt.Printf("%04d - %d - %d\n", i, curNew, newP)
 		curNew++
+		skips = 0
 		if curNew >= newPrimesLen {
 			break
 		}

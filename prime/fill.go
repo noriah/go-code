@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-func doFill(toFind int) {
+func doFill(toFind int, print bool) {
 	newPrimes := make([]int, toFind)
 	var curIdx, newIdx int
 	var isP bool
@@ -22,7 +22,9 @@ func doFill(toFind int) {
 
 		if isP {
 			newPrimes[newIdx] = curIdx
-			fmt.Printf("%d - %d\n", newIdx, curIdx)
+			if print {
+				fmt.Printf("%d - %d\n", newIdx, curIdx)
+			}
 			newIdx++
 			if newIdx >= toFind {
 				break
