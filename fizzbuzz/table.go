@@ -13,7 +13,7 @@ func Table() {
 
 	var fmtStr string = "%[1]c %3[2]d - %08[2]b |  %2[3]d - %04[3]b | %2[4]d - %04[4]b | %2[5]d - %04[5]b\n"
 
-	for num = 0; num <= 100; num++ {
+	for num = 1; num <= 100; num++ {
 
 		// num MOD 3 will return the remainder after dividing
 		// by 3 as much as possible.
