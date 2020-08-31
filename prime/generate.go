@@ -1,16 +1,20 @@
 package prime
 
-// GetCountV1 finds X number of primes by trial division, starting at 3
+// GenerateCount finds X number of primes by trial division, starting at 3
 // checking the value against an array of primes we fill with previously
 // found primes
 //
 // NOTE: This is NOT a good way to find big prime numbers. As we find primes,
-// we increase the number of iterations of the inner loop for each
-// following candidate
+// we increase the max number of iterations of the inner loop for each
+// following candidate.
 //
-// Time complexity: O(n^2)
+// Since primes we find will not be in our array, and won't be divisble by
+// any previous prime, we have to go through all at-time known primes to
+// find a single new prime.
+//
+// Time complexity: O(n**2)
 // Space complexity: O(n)
-func GetCountV1(count int) []int {
+func GenerateCount(count int) []int {
 	if count < 1 {
 		return nil
 	}
@@ -21,6 +25,8 @@ func GetCountV1(count int) []int {
 
 	var candidate, idx, jdx, divisor int
 	var isPrime bool
+
+	// var iterations uint64
 
 	// Candidate starts at 3 and idx at 1 beacuse we want to skip 2 as we already know it
 	for candidate, idx = 3, 1; idx < count; candidate += 2 {
@@ -38,6 +44,8 @@ func GetCountV1(count int) []int {
 			}
 		}
 
+		// iterations += uint64(jdx)
+
 		// Did we find a prime
 		if isPrime {
 			// Add it to the list
@@ -46,6 +54,8 @@ func GetCountV1(count int) []int {
 			idx++
 		}
 	}
+
+	// fmt.Println(count, iterations)
 
 	return primes
 }

@@ -8,7 +8,7 @@ func Branchless() {
 	var num, start, end int
 
 	// Our string of FizzBuzz
-	fizzBuzz := "FizzBuzz"
+	word := "FizzBuzz"
 
 	// Keys for printf
 	key := []string{"%[2]s\n", "%[1]d\n"}
@@ -37,6 +37,6 @@ func Branchless() {
 
 		// Print it out
 		// if we divide start by end (integer math only), we can select the right key
-		fmt.Printf(key[start/end], num, fizzBuzz[start:end])
+		fmt.Printf(key[start/end], num, word[start:end])
 	}
 }
