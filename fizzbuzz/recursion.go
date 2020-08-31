@@ -14,10 +14,12 @@ func Recursion() {
 	// declare our vars
 	var start, end int
 
+	// declare an array of functions
 	var fns []func(int)
 
 	// Our array of functions
 	fns = []func(int){
+		// Our main recursion function.
 		func(num int) {
 			// If we look at the string FizzBuzz as an array of characters we want
 			// either the first half, the second half, or all of it.
@@ -41,10 +43,19 @@ func Recursion() {
 			// Print it out
 			// if we divide start by end (integer math only), we can select the right key
 			fmt.Printf(key[start/end], num, word[start:end])
+
+			// Call a function based on what num is.
+			// Divide num by 100. Integer math will truncate anything less than 1 to 0.
+			// Use that value to select next function. If its 0, then we continue the "loop"
+			// and call this function again. If its 1, then we call the noop function, ending
+			// the "loop".
 			fns[num/100](num + 1)
 		},
+
+		// A noop function to end the recursion
 		func(_ int) {},
 	}
 
+	// Call our function with our first number
 	fns[0](1)
 }
