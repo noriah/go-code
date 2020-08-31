@@ -14,9 +14,8 @@ func Branchless() {
 	key := []string{"%[2]s\n", "%[1]d\n"}
 
 	// loop through the numbers 1 to 100
-	// assign some variables used every loop
 	for num = 1; num <= 100; num++ {
-		// If we look at the string FizzBuzz as an array of charactersm we want
+		// If we look at the string FizzBuzz as an array of characters we want
 		// either the first half, the second half, or all of it.
 		// F I Z Z B U Z Z
 		// 0 1 2 3 4 5 6 7

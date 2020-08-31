@@ -23,7 +23,7 @@ func GenerateCount(count int) []int {
 	// Insert 2 because we already know its prime
 	primes[0] = 2
 
-	var candidate, idx, jdx, divisor int
+	var candidate, idx, jdx int
 	var isPrime bool
 
 	// var iterations uint64
@@ -35,9 +35,8 @@ func GenerateCount(count int) []int {
 
 		// For all the primes found so far
 		for jdx = 1; jdx < idx; jdx++ {
-			divisor = primes[jdx]
 			// Compare the candidate against it with MOD
-			if candidate%divisor == 0 {
+			if candidate%primes[jdx] == 0 {
 				// Oh no. not a prime. set a flag and break the loop
 				isPrime = false
 				break
