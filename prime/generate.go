@@ -12,8 +12,8 @@ package prime
 // any previous prime, we have to go through all at-time-known primes to
 // find a single new prime.
 //
-// Time complexity: O(n**2)
-// Space complexity: O(n)
+// Time: Worst O(n**2)
+// Space: O(n)
 func GenerateCount(count int) []int {
 	if count < 1 {
 		return nil
@@ -37,7 +37,7 @@ func GenerateCount(count int) []int {
 		for jdx = 1; jdx < idx; jdx++ {
 			// Compare the candidate against it with MOD
 			if candidate%primes[jdx] == 0 {
-				// Oh no. not a prime. set a flag and break the loop
+				// Oh no. not a prime. clear the flag and break the loop
 				isPrime = false
 				break
 			}

@@ -8,7 +8,7 @@ func Branchless() {
 	var num, start, end int
 
 	// Our string of FizzBuzz
-	word := "FizzBuzz"
+	const word = "FizzBuzz"
 
 	// Keys for printf
 	key := []string{"%[2]s\n", "%[1]d\n"}
