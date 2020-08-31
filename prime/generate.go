@@ -9,7 +9,7 @@ package prime
 // following candidate.
 //
 // Since primes we find will not be in our array, and won't be divisble by
-// any previous prime, we have to go through all at-time known primes to
+// any previous prime, we have to go through all at-time-known primes to
 // find a single new prime.
 //
 // Time complexity: O(n**2)
