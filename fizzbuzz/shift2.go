@@ -41,3 +41,16 @@ func Shift2() {
 		fmt.Println(fizzBuzz[start:end])
 	}
 }
+
+// Shift2Compact does FizzBuzz by shifting bits but with less steps
+func Shift2Compact() {
+	for num, fb := 1, "FizzBuzz"; num <= 100; num++ {
+		start := (0x18 >> (num % 3)) & 0x04
+		end := 0x04 << (0x01 >> (num % 5))
+		if start == end {
+			fmt.Println(num)
+			continue
+		}
+		fmt.Println(fb[start:end])
+	}
+}
