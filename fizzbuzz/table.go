@@ -1,14 +1,17 @@
-package main
+package fizzbuzz
 
 import (
 	"fmt"
 )
 
-func fizzBuzzTable() {
+// Table prints a table with binary representation
+func Table() {
 
 	// define our variables
 	var num, div3, div5, div15, flag int
 	var star rune
+
+	var fmtStr string = "%[1]c %3[2]d - %08[2]b |  %2[3]d - %04[3]b | %2[4]d - %04[4]b | %2[5]d - %04[5]b\n"
 
 	for num = 0; num <= 100; num++ {
 
@@ -41,7 +44,7 @@ func fizzBuzzTable() {
 		// This will return space when there is no divide, and star otherwise
 		star = rune(0x20 + flag*0x0a)
 
-		// Print our numbers
-		fmt.Printf("%[1]c %3[2]d | %08[2]b ||| %2[3]d | %04[3]b ||| %2[4]d | %04[4]b ||| %2[5]d | %04[5]b\n", star, num, div3, div5, div15)
+		// Print the row
+		fmt.Printf(fmtStr, star, num, div3, div5, div15)
 	}
 }
