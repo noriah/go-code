@@ -6,7 +6,7 @@ import "fmt"
 func Slice() {
 
 	// declare our vars
-	var num, d3, d5, start, end uint8
+	var num, d3, d5, start, end int
 
 	// Our string of FizzBuzz
 	const word = "FizzBuzz"
