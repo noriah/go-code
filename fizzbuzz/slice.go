@@ -2,8 +2,8 @@ package fizzbuzz
 
 import "fmt"
 
-// Simple does FizzBuzz in a loop with arithmatic operations
-func Simple() {
+// Slice does FizzBuzz by slicing a string
+func Slice() {
 
 	// declare our vars
 	var num, d3, d5, start, end uint8
