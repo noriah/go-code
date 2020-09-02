@@ -19,7 +19,7 @@ func GenerateCount(count int) []int {
 		return nil
 	}
 
-	primes := make([]int, count)
+	var primes = make([]int, count)
 	// Insert 2 because we already know its prime
 	primes[0] = 2
 

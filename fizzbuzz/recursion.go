@@ -9,7 +9,7 @@ func Recursion() {
 	const word = "FizzBuzz"
 
 	// Keys for printf
-	key := []string{"%[2]s\n", "%[1]d\n"}
+	var key = []string{"%[2]s\n", "%[1]d\n"}
 
 	// declare our vars
 	var start, end int

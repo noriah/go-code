@@ -43,7 +43,7 @@ type Queue struct {
 func New(values ...interface{}) *Queue {
 
 	// Make a queue object
-	newQueue := &Queue{
+	var newQueue = &Queue{
 
 		// Assign an empty root node
 		root: &node{},
@@ -66,6 +66,50 @@ func New(values ...interface{}) *Queue {
 	return newQueue
 }
 
+// Size returns the number of items in the queue
+func (q *Queue) Size() int {
+
+	// Lock the mutex so we don't check in the middle of an operation
+	q.mu.Lock()
+
+	// To avoid assigning a temp variable just for the count, we can defer
+	// the mutex unlock to after we have returned
+	defer q.mu.Unlock()
+
+	// return the count of items
+	return q.count
+}
+
+// IsEmpty checks for queue emptiness
+func (q *Queue) IsEmpty() bool {
+
+	// If our tail points to our root, then we have an empty queue
+	return q.tail == q.root
+}
+
+// Clear empties the queue.
+// Since the garbage collector cleans up all pointer values once they are no
+// longer referenced, we just need to set our tail pointer to our root node,
+// and set next on the root node to our tail pointer value (which is our root node).
+func (q *Queue) Clear() {
+
+	// Lock our mutex so we can be sure to clear the queue before any other
+	// operations happen on it
+	q.mu.Lock()
+
+	// Update our tail to point to our root node
+	q.tail = q.root
+
+	// Update our root node to point next to our tail
+	q.root.next = q.tail
+
+	// Update count to be 0
+	q.count = 0
+
+	// Unlock the mutex
+	q.mu.Unlock()
+}
+
 // Push appends a value to the end of the queue.
 //
 // Time: O(1)
@@ -73,7 +117,7 @@ func New(values ...interface{}) *Queue {
 func (q *Queue) Push(value interface{}) {
 
 	// Make a new node to be added to the queue
-	newNode := &node{
+	var newNode = &node{
 
 		// Set next on our new node to be the head of our queue. This allows
 		// us to easily add to the queue when it is empty once again.
@@ -129,6 +173,7 @@ func (q *Queue) Append(values ...interface{}) {
 
 	// Define variables to build a mini-queue
 	var next, tail *node
+	var idx = vLen - 1
 
 	// Make a tail node and build up
 	tail = &node{
@@ -137,7 +182,7 @@ func (q *Queue) Append(values ...interface{}) {
 		next: q.root,
 
 		// Set the value of our tail node
-		value: values[vLen-1],
+		value: values[idx],
 	}
 
 	// Set the next to be the tail of our mini-queu
@@ -145,7 +190,7 @@ func (q *Queue) Append(values ...interface{}) {
 
 	// For all the values left in the array, iterate backwards, building our
 	// mini-queue from the bottom up
-	for idx := vLen - 2; idx >= 0; idx-- {
+	for idx--; idx >= 0; idx-- {
 
 		// Make a new node and assign it to our variable
 		// NOTE: even though we are assigning next to be a new value, the body of
@@ -239,48 +284,4 @@ func (q *Queue) Peek() (interface{}, error) {
 
 	// Return the the value in our temp node
 	return temp.value, nil
-}
-
-// Clear empties the queue.
-// Since the garbage collector cleans up all pointer values once they are no
-// longer referenced, we just need to set our tail pointer to our root node,
-// and set next on the root node to our tail pointer value (which is our root node).
-func (q *Queue) Clear() {
-
-	// Lock our mutex so we can be sure to clear the queue before any other
-	// operations happen on it
-	q.mu.Lock()
-
-	// Update our tail to point to our root node
-	q.tail = q.root
-
-	// Update our root node to point next to our tail
-	q.root.next = q.tail
-
-	// Update count to be 0
-	q.count = 0
-
-	// Unlock the mutex
-	q.mu.Unlock()
-}
-
-// Size returns the number of items in the queue
-func (q *Queue) Size() int {
-
-	// Lock the mutex so we don't check in the middle of an operation
-	q.mu.Lock()
-
-	// To avoid assigning a temp variable just for the count, we can defer
-	// the mutex unlock to after we have returned
-	defer q.mu.Unlock()
-
-	// return the count of items
-	return q.count
-}
-
-// IsEmpty checks for queue emptiness
-func (q *Queue) IsEmpty() bool {
-
-	// If our tail points to our root, then we have an empty queue
-	return q.tail == q.root
 }

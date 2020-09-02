@@ -43,7 +43,7 @@ func New(values ...interface{}) *Stack {
 	// Stack.Append methods
 
 	// Make a stack object
-	newStack := &Stack{}
+	var newStack = &Stack{}
 
 	// Add any values we may have been passed to the stack
 	newStack.Append(values)
@@ -108,20 +108,20 @@ func (s *Stack) Append(values ...interface{}) {
 
 	// Define variables to build a mini-stack
 	var head, last *node
+	var idx int
 
 	// Start with the last node and build up
 	head = &node{
 		// Set the value of our tail node
-		value: values[0],
+		value: values[idx],
 	}
 
 	// save a reference to the last item in our mini-stack so we can point
 	// its next value to the top of our current stack
 	last = head
 
-	// For all the values left in the array, iterate backwards, building our
-	// mini-stack from the bottom up
-	for idx := 1; idx < vLen; idx++ {
+	// For all the values left in the array, iterate through and build our mini-stack
+	for idx++; idx < vLen; idx++ {
 
 		// Make a new node and assign it to our variable
 		// NOTE: even though we are assigning next to be a new value, the body of

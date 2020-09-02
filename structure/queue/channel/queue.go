@@ -14,6 +14,9 @@ var errorQueueFull = errors.New("full queue")
 // An error to be returned when Pop-ing on an empty queue
 var errorQueueEmpty = errors.New("empty queue")
 
+// An error to be returned if we hit a closed channel (we never should)
+var errorChannelClosed = errors.New("closed channel")
+
 // Queue is a channel that is also a queue but has no peek
 // Size is fixed. Adding to a full channel queue will return error
 type Queue struct {
@@ -88,11 +91,18 @@ func (q *Queue) Pop() (interface{}, error) {
 	q.mu.Lock()
 	defer q.mu.Unlock()
 
+	var value interface{}
+	var ok bool
+
 	select {
-	case value := <-q.channel:
-		q.size--
-		return value, nil
+	case value, ok = <-q.channel:
+		if ok {
+			q.size--
+			return value, nil
+		}
 	default:
-		return nil, errorQueueFull
+		return nil, errorQueueEmpty
 	}
+
+	return value, errorChannelClosed
 }

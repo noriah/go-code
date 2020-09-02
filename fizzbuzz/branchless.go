@@ -11,7 +11,7 @@ func Branchless() {
 	const word = "FizzBuzz"
 
 	// Keys for printf
-	key := []string{"%[2]s\n", "%[1]d\n"}
+	var key = []string{"%[2]s\n", "%[1]d\n"}
 
 	// loop through the numbers 1 to 100
 	for num = 1; num <= 100; num++ {
