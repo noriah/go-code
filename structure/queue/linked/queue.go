@@ -12,7 +12,8 @@ var errorQueueEmpty = errors.New("empty queue")
 
 // node holds an entry in the queue
 type node struct {
-	// reference to the next item in the queue
+
+	// reference to the next item in a queue
 	next *node
 
 	// value held by this node
@@ -43,6 +44,8 @@ func New(values ...interface{}) *Queue {
 
 	// Make a queue object
 	newQueue := &Queue{
+
+		// Assign an empty root node
 		root: &node{},
 	}
 
@@ -109,11 +112,13 @@ func (q *Queue) Append(values ...interface{}) {
 	// assign a variable so we don't do multiple length checks
 	var vLen = len(values)
 
-	// If we have less than 2 items in values, we don't want to do the logic below.
+	// If we have less than 2 items in values, we don't want to do the insertion
+	// logic below. We only want to check for a single value now and if so, push it.
 	if vLen < 2 {
 
 		// Check for length == 1
 		if vLen == 1 {
+
 			// If we only have one item in values, just push it.
 			q.Push(values[0])
 		}
@@ -214,6 +219,7 @@ func (q *Queue) Pop() (interface{}, error) {
 //
 // Time: O(1)
 func (q *Queue) Peek() (interface{}, error) {
+
 	// Empty queue check
 	if q.tail == q.root {
 		return nil, errorQueueEmpty
@@ -240,6 +246,7 @@ func (q *Queue) Peek() (interface{}, error) {
 // longer referenced, we just need to set our tail pointer to our root node,
 // and set next on the root node to our tail pointer value (which is our root node).
 func (q *Queue) Clear() {
+
 	// Lock our mutex so we can be sure to clear the queue before any other
 	// operations happen on it
 	q.mu.Lock()
@@ -259,6 +266,7 @@ func (q *Queue) Clear() {
 
 // Size returns the number of items in the queue
 func (q *Queue) Size() int {
+
 	// Lock the mutex so we don't check in the middle of an operation
 	q.mu.Lock()
 
@@ -272,6 +280,7 @@ func (q *Queue) Size() int {
 
 // IsEmpty checks for queue emptiness
 func (q *Queue) IsEmpty() bool {
+
 	// If our tail points to our root, then we have an empty queue
 	return q.tail == q.root
 }
