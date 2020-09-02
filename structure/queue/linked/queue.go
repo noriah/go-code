@@ -250,6 +250,9 @@ func (q *Queue) Clear() {
 	// Update our root node to point next to our tail
 	q.root.next = q.tail
 
+	// Update count to be 0
+	q.count = 0
+
 	// Unlock the mutex
 	q.mu.Unlock()
 }
