@@ -8,7 +8,7 @@ import (
 )
 
 // An error to be returned when Pop/Peek-ing on an empty stack
-var errorQueueEmpty = errors.New("empty stack")
+var errorStackEmpty = errors.New("empty stack")
 
 // node holds an entry in the stack
 type node struct {
@@ -43,13 +43,13 @@ func New(values ...interface{}) *Stack {
 	// Stack.Append methods
 
 	// Make a stack object
-	newQueue := &Stack{}
+	newStack := &Stack{}
 
 	// Add any values we may have been passed to the stack
-	newQueue.Append(values)
+	newStack.Append(values)
 
 	// Return the new stack
-	return newQueue
+	return newStack
 }
 
 // Push adds a value to the top of the stack.
@@ -164,7 +164,7 @@ func (s *Stack) Pop() (interface{}, error) {
 	if s.head == nil {
 
 		// Return a nil value and our error
-		return nil, errorQueueEmpty
+		return nil, errorStackEmpty
 	}
 
 	// Define a node pointer to hold the head
@@ -198,7 +198,7 @@ func (s *Stack) Peek() (interface{}, error) {
 
 	// Empty stack check
 	if s.head == nil {
-		return nil, errorQueueEmpty
+		return nil, errorStackEmpty
 	}
 
 	// Make a temporary pointer
@@ -227,7 +227,7 @@ func (s *Stack) Clear() {
 	// operations happen on it
 	s.mu.Lock()
 
-	// Update our head node to point next to our tail
+	// Update our head node to point nil
 	s.head = nil
 
 	// Update count to be 0
