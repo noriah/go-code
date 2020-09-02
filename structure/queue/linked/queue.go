@@ -1,3 +1,5 @@
+// Package linked holds implementation for a linked queue.
+// A linked queue is a queue implemented with one-way linked nodes
 package linked
 
 import (
@@ -5,7 +7,7 @@ import (
 	"sync"
 )
 
-// An error to be returned when Pop/Peek-int on an empty queue
+// An error to be returned when Pop/Peek-ing on an empty queue
 var errorQueueEmpty = errors.New("empty queue")
 
 // node holds an entry in the queue
