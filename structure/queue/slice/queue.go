@@ -16,7 +16,8 @@ var errorQueueEmpty = errors.New("empty queue")
 var errorChannelClosed = errors.New("closed channel")
 
 // Queue is a Size that is also a queue
-// It uses channels internally to keep track of open slots
+// It uses channels internally to keep track of open slots in the array
+// so that we never have to shift, nor do we waste space
 type Queue struct {
 	// Mutex to lock when we are modifying things
 	mu sync.Mutex
@@ -65,7 +66,7 @@ func (q *Queue) expand() {
 
 	// For, or until we somehow break the loop
 	for {
-		// Select between two options. Pick the first available
+		// Select between options. Pick the first available
 		select {
 		case idx = <-q.popChannel:
 			newPopChannel <- idx
@@ -165,7 +166,8 @@ func (q *Queue) Push(value interface{}) {
 	q.mu.Unlock()
 }
 
-// Pop removes a value from the internal channel and returns it.
+// Pop removes a value from the internal channel and returns the value
+// from the array at that index
 // Returns nil and error if queue is empty.
 func (q *Queue) Pop() (interface{}, error) {
 	if q.size == 0 {
@@ -233,7 +235,7 @@ func (q *Queue) Peek() (interface{}, error) {
 		case idx, ok = <-q.popChannel:
 			// If the channel is not closed
 			if !ok {
-				panic("What happened here with push channel??")
+				panic("What happened here with pop channel??")
 			}
 			q.nextPop = idx
 
