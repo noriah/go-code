@@ -159,6 +159,9 @@ func (q *Queue) Append(values ...interface{}) {
 
 		// Unlock the mutex
 		q.mu.Unlock()
+	} else if vLen == 1 {
+		// If we only have one item in values, just push it.
+		q.Push(values[0])
 	}
 }
 
