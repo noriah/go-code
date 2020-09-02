@@ -106,63 +106,72 @@ func (q *Queue) Push(value interface{}) {
 // Space: O(n)
 func (q *Queue) Append(values ...interface{}) {
 
-	// Only do things if values is not empty, and more than one exists
-	if vLen := len(values); vLen > 1 {
+	// assign a variable so we don't do multiple length checks
+	var vLen = len(values)
 
-		// Define variables to build a mini-queue
-		var next, tail *node
+	// If we have less than 2 items in values, we don't want to do the logic below.
+	if vLen < 2 {
 
-		// Make a tail node and build up
-		tail = &node{
-
-			// Set the next on our tail to be the root of the queue.
-			next: q.root,
-
-			// Set the value of our tail node
-			value: values[vLen-1],
+		// Check for length == 1
+		if vLen == 1 {
+			// If we only have one item in values, just push it.
+			q.Push(values[0])
 		}
 
-		// Set the next to be the tail of our mini-queu
-		next = tail
-
-		// For all the values left in the array, iterate backwards, building our
-		// mini-queue from the bottom up
-		for idx := vLen - 2; idx >= 0; idx-- {
-
-			// Make a new node and assign it to our variable
-			// NOTE: even though we are assigning next to be a new value, the body of
-			// the node instantiation is evaluated first, so we don't have to worry about
-			// pointing a new node to itself
-			next = &node{
-
-				// Set the next value on our new node to be the previous node that we made
-				next: next,
-
-				// Set the value of the new node
-				value: values[idx],
-			}
-		}
-
-		// Lock the mutex so we can be sure to add our new mini-queue to the
-		// end of the actual queue. Without this, we could be in a race condition
-		// where we took long enough to build the mini-queue that another
-		q.mu.Lock()
-
-		// Set next on the tail queue item to point to our mini-queue start
-		q.tail.next = next
-
-		// Set tail on our queue to point to the tail of our mini-queue
-		q.tail = tail
-
-		// increase our count by number of values
-		q.count += vLen
-
-		// Unlock the mutex
-		q.mu.Unlock()
-	} else if vLen == 1 {
-		// If we only have one item in values, just push it.
-		q.Push(values[0])
+		// end the function
+		return
 	}
+
+	// Define variables to build a mini-queue
+	var next, tail *node
+
+	// Make a tail node and build up
+	tail = &node{
+
+		// Set the next on our tail to be the root of the queue.
+		next: q.root,
+
+		// Set the value of our tail node
+		value: values[vLen-1],
+	}
+
+	// Set the next to be the tail of our mini-queu
+	next = tail
+
+	// For all the values left in the array, iterate backwards, building our
+	// mini-queue from the bottom up
+	for idx := vLen - 2; idx >= 0; idx-- {
+
+		// Make a new node and assign it to our variable
+		// NOTE: even though we are assigning next to be a new value, the body of
+		// the node instantiation is evaluated first, so we don't have to worry about
+		// pointing a new node to itself
+		next = &node{
+
+			// Set the next value on our new node to be the previous node that we made
+			next: next,
+
+			// Set the value of the new node
+			value: values[idx],
+		}
+	}
+
+	// Lock the mutex so we can be sure to add our new mini-queue to the
+	// end of the actual queue. Without this, we could be in a race condition
+	// where we took long enough to build the mini-queue that another
+	q.mu.Lock()
+
+	// Set next on the tail queue item to point to our mini-queue start
+	q.tail.next = next
+
+	// Set tail on our queue to point to the tail of our mini-queue
+	q.tail = tail
+
+	// increase our count by number of values
+	q.count += vLen
+
+	// Unlock the mutex
+	q.mu.Unlock()
 }
 
 // Pop returns the value at the front of the queue, removing it from the queue
