@@ -62,6 +62,11 @@ func (q *Queue) Capacity() int {
 	return q.capacity
 }
 
+// IsEmpty returns emptiness state
+func (q *Queue) IsEmpty() bool {
+	return q.size == 0
+}
+
 // Clear removes all items from the queue
 func (q *Queue) Clear() {
 	// Lock the mutex so we can empty the channel in peace

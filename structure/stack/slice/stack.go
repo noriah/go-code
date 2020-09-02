@@ -7,10 +7,10 @@ import (
 	"sync"
 )
 
+const defaultSliceSize = 16
+
 // An error to be returned when Pop/Peek-ing on an empty stack
 var errorStackEmpty = errors.New("empty stack")
-
-const defaultSliceSize = 8
 
 // Stack implements a Slice Stack
 type Stack struct {
@@ -58,7 +58,7 @@ func (s *Stack) Push(value interface{}) {
 	// Adding an item before we do, and having a messed up stack counter
 	s.mu.Lock()
 
-	if s.count+1 >= cap(s.array) {
+	if s.count >= cap(s.array) {
 		s.expand()
 	}
 
