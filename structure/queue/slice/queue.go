@@ -9,17 +9,14 @@ import (
 
 const defaultSliceSize = 16
 
-// An error to be returned when Push-ing on a full queue
-var errorQueueFull = errors.New("full queue")
-
 // An error to be returned when Pop-ing on an empty queue
 var errorQueueEmpty = errors.New("empty queue")
 
 // An error to be returned if we hit a closed channel (we never should)
 var errorChannelClosed = errors.New("closed channel")
 
-// Queue is a channel that is also a queue but has no peek
-// Size is fixed. Adding to a full channel queue will return error
+// Queue is a Size that is also a queue
+// It uses channels internally to keep track of open slots
 type Queue struct {
 	// Mutex to lock when we are modifying things
 	mu sync.Mutex
@@ -29,7 +26,7 @@ type Queue struct {
 	popChannel chan int
 	// channel to hold our indexes for pushing
 	pushChannel chan int
-	// Size to keep track how many items are in the channel
+	// Size to keep track how many items are in the array
 	size int
 	// the next index to pop
 	nextPop int
@@ -37,13 +34,14 @@ type Queue struct {
 	nextPush int
 }
 
-// New returns a new Channel Queue
+// New returns a new Slice Queue
 func New() *Queue {
 	// Make a new queue
 	var newQueue = &Queue{
 		array:       make([]interface{}, defaultSliceSize),
 		popChannel:  make(chan int, defaultSliceSize),
 		pushChannel: make(chan int, defaultSliceSize),
+		nextPop:     -1,
 	}
 
 	// Return the queue
@@ -98,7 +96,7 @@ func (q *Queue) Size() int {
 
 // Clear removes all items from the queue
 func (q *Queue) Clear() {
-	// Lock the mutex so we can empty the channel in peace
+	// Lock the mutex so we can empty the channels in peace
 	q.mu.Lock()
 
 	defer q.mu.Unlock()
@@ -124,7 +122,12 @@ func (q *Queue) Clear() {
 	}
 }
 
-// Push adds a value to the internal channel.
+// IsEmpty returns the emptiness state
+func (q *Queue) IsEmpty() bool {
+	return q.Size() == 0
+}
+
+// Push adds a value to the internal array.
 func (q *Queue) Push(value interface{}) {
 	var idx int
 	var ok bool
@@ -189,7 +192,6 @@ func (q *Queue) Pop() (interface{}, error) {
 			if !ok {
 				panic("What happened here with push channel??")
 			}
-			q.size--
 		default:
 			return nil, errorQueueEmpty
 		}
@@ -197,6 +199,7 @@ func (q *Queue) Pop() (interface{}, error) {
 
 	select {
 	case q.pushChannel <- idx:
+		q.size--
 
 	default:
 		panic("What??? full push channel?")
@@ -233,6 +236,7 @@ func (q *Queue) Peek() (interface{}, error) {
 				panic("What happened here with push channel??")
 			}
 			q.nextPop = idx
+
 		default:
 			return nil, errorQueueEmpty
 		}
