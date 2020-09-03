@@ -1,9 +1,10 @@
-# Go Code! (something)
+# Go Code [Something]!
 
-[![code][withlove]][self]
-[![code][veridian]][self]
+[![love][withlove]][noriah-dev]
+[![made-with-go][withgo]][go-dev]
+[![approved-by-veridian][veridian]][bot-wiki]
 
-<!-- The code in this repo is meant to serve as examples and demonstrations of data structures, algorithms and common code problems. For that reason, most of the code is contained wholly in their packages. -->
+Golang code examples
 
 <!-- ## structures
 
@@ -23,7 +24,13 @@
   - [binary](example/number/binary) -->
 
 
+<!-- Links -->
 [self]: https://github.com/noriah/code
+[noriah-dev]: https://noriah.dev
+[go-dev]: https://go.dev
+[bot-wiki]: https://en.wikipedia.org/wiki/Better_Off_Ted
 
-[withlove]:https://forthebadge.com/images/badges/built-with-love.svg
-[veridian]:https://forthebadge.com/images/badges/approved-by-veridian-dynamics.svg
+<!-- Images -->
+[withlove]: https://forthebadge.com/images/badges/built-with-love.svg
+[withgo]: https://forthebadge.com/images/badges/made-with-go.svg
+[veridian]: https://forthebadge.com/images/badges/approved-by-veridian-dynamics.svg
