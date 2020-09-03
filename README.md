@@ -1,14 +1,15 @@
-# code examples
+# Go Code! (something)
 
 [![code][withlove]][self]
 [![code][veridian]][self]
 
-The code in this repo is meant to serve as examples and demonstrations of data structures, algorithms and common code problems. For that reason, most of the code is contained wholly in their packages.
+<!-- The code in this repo is meant to serve as examples and demonstrations of data structures, algorithms and common code problems. For that reason, most of the code is contained wholly in their packages. -->
 
-## structures
+<!-- ## structures
 
 - [queues](structure/queue)
 - [stacks](structure/stack)
+- [trees](structure/tree)
 
 
 ## examples
@@ -16,9 +17,10 @@ The code in this repo is meant to serve as examples and demonstrations of data s
 - [strings](example/string)
 - [fizzbuzz](example/fizzbuzz)
 - [numbers](example/number)
-  - [primes](example/number/prime) - prime number things
-  - [integers](example/number/integer) - integer operations
-  - [floats](example/number/float) - floating point numbers
+  - [primes](example/number/prime)
+  - [integers](example/number/integer)
+  - [floats](example/number/float)
+  - [binary](example/number/binary) -->
 
 
 [self]: https://github.com/noriah/code
