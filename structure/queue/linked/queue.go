@@ -1,5 +1,7 @@
-// Package linked holds implementation for a linked queue.
-// A linked queue is a queue implemented with one-way linked nodes
+// Package linked holds implementation for a Linked List Queue.
+// A linked list queue is implemented with one-way linked nodes
+// Each node points to the next node in the queue. The last node points
+// To the root (sentinel) node.
 package linked
 
 import (
@@ -7,60 +9,55 @@ import (
 	"sync"
 )
 
-// An error to be returned when Pop/Peek-ing on an empty queue
+// An error to be returned when Push-ing on a full queue
+var errorQueueFull = errors.New("full queue")
+
+// An error to be returned when Dequeue/Peek-ing on an empty queue
 var errorQueueEmpty = errors.New("empty queue")
 
-// node holds an entry in the queue
-type node struct {
-
-	// reference to the next item in a queue
-	next *node
-
-	// value held by this node
-	value interface{}
+// Node is a thin wrapper around a value in a queue.
+// It holds the value and a reference to the next node in the queue.
+type Node struct {
+	next  *Node       // Reference to next node in our queue
+	value interface{} // Value this node represents in our queue
 }
 
-// Queue implements a Linked Queue
+// Queue implements a Linked List Queue
 // References to the head and tail of the queue are held so that we can
 // achieve O(1) time for insertion and removal
 // The queue is empty when the tail points to our root (root is the same as tail)
 type Queue struct {
-
-	// our mutex. don't embed because we don't want to expose it
-	mu sync.Mutex
-
-	// the root node of the queue. its next value changes on every pop
-	root *node
-
-	// the tail of our queue. updated every push
-	tail *node
-
-	// our number of items in the queue
-	count int
+	mu       sync.Mutex // Mutex for safe parallel operations
+	root     *Node      // Root node of our queue. Sentinel node
+	tail     *Node      // Tail node of our queue. Real node unless empty, then root
+	count    int        // Total number of nodes minus root node
+	capacity int        // Maximum size of our queue. 0 means no limit (dynamic)
 }
 
-// New returns a new Linked Queue
-func New(values ...interface{}) *Queue {
+// New returns a new Linked List Queue.
+// The optional size may be specified. Only the first value will be used.
+func New(size ...int) *Queue {
+	var capacity = 0
+
+	if len(size) > 0 {
+		capacity = size[0]
+		if capacity < 0 {
+			panic("Negative value for size provided")
+		}
+	}
 
 	// Make a queue object
 	var newQueue = &Queue{
 
 		// Assign an empty root node
-		root: &node{},
+		root: &Node{},
+
+		// set the capacity (if there is any)
+		capacity: capacity,
 	}
 
-	// Point the tail of our queue to the queue itself.
-	// The queue is empty right now, so we will want to add items to
-	// the current root node.
-	// This allows us to have simplified logic
-	// for the Queue.Push and Queue.Append methods
-	newQueue.tail = newQueue.root
-
-	// Assign the next value on the root node to point to our tail
-	newQueue.root.next = newQueue.tail
-
-	// Add any values we may have been passed to the queue
-	newQueue.Append(values)
+	// Setup our queue
+	newQueue.clear()
 
 	// Return the new queue
 	return newQueue
@@ -87,6 +84,12 @@ func (q *Queue) IsEmpty() bool {
 	return q.tail == q.root
 }
 
+// IsFull returns the fullness state
+func (q *Queue) IsFull() bool {
+	// If our queue has a capacity set, honor it
+	return q.capacity > 0 && q.count == q.capacity
+}
+
 // Clear empties the queue.
 // Since the garbage collector cleans up all pointer values once they are no
 // longer referenced, we just need to set our tail pointer to our root node,
@@ -97,27 +100,35 @@ func (q *Queue) Clear() {
 	// operations happen on it
 	q.mu.Lock()
 
-	// Update our tail to point to our root node
-	q.tail = q.root
-
-	// Update our root node to point next to our tail
-	q.root.next = q.tail
-
-	// Update count to be 0
-	q.count = 0
+	// Do our clear things
+	q.clear()
 
 	// Unlock the mutex
 	q.mu.Unlock()
 }
 
-// Push appends a value to the end of the queue.
+// Enqueue inserts a value at the end of the queue.
+//
+// First check for fullness. If full, return error.
+// Make a new node. Set node.next to point to the root of the queue.
+// Add value to node.
+// Set the the queue tail node next value to point to our new node.
+// Set the tail value of our queue to be our new node
+// Increment the count of nodes
+// Unlock the mutex so other operations can continue
+// Return no error
 //
 // Time: O(1)
 // Space: O(1)
-func (q *Queue) Push(value interface{}) {
+func (q *Queue) Enqueue(value interface{}) error {
+	// Fullness check
+	if q.IsFull() {
+		// Return error on full
+		return errorQueueFull
+	}
 
 	// Make a new node to be added to the queue
-	var newNode = &node{
+	var newNode = &Node{
 
 		// Set next on our new node to be the head of our queue. This allows
 		// us to easily add to the queue when it is empty once again.
@@ -142,6 +153,8 @@ func (q *Queue) Push(value interface{}) {
 
 	// Unlock the mutex
 	q.mu.Unlock()
+
+	return nil
 }
 
 // Append adds values to the end of the queue by building a mini-list and
@@ -164,7 +177,7 @@ func (q *Queue) Append(values ...interface{}) {
 		if vLen == 1 {
 
 			// If we only have one item in values, just push it.
-			q.Push(values[0])
+			q.Enqueue(values[0])
 		}
 
 		// end the function
@@ -172,11 +185,11 @@ func (q *Queue) Append(values ...interface{}) {
 	}
 
 	// Define variables to build a mini-queue
-	var next, tail *node
+	var next, tail *Node
 	var idx = vLen - 1
 
 	// Make a tail node and build up
-	tail = &node{
+	tail = &Node{
 
 		// Set the next on our tail to be the root of the queue.
 		next: q.root,
@@ -196,7 +209,7 @@ func (q *Queue) Append(values ...interface{}) {
 		// NOTE: even though we are assigning next to be a new value, the body of
 		// the node instantiation is evaluated first, so we don't have to worry about
 		// pointing a new node to itself
-		next = &node{
+		next = &Node{
 
 			// Set the next value on our new node to be the previous node that we made
 			next: next,
@@ -224,10 +237,10 @@ func (q *Queue) Append(values ...interface{}) {
 	q.mu.Unlock()
 }
 
-// Pop returns the value at the front of the queue, removing it from the queue
+// Dequeue returns the value at the front of the queue, removing it from the queue
 //
 // Time: O(1)
-func (q *Queue) Pop() (interface{}, error) {
+func (q *Queue) Dequeue() (interface{}, error) {
 
 	// If our tail node is the same our our root node, then we have an empty queue
 	if q.tail == q.root {
@@ -237,7 +250,7 @@ func (q *Queue) Pop() (interface{}, error) {
 	}
 
 	// Define a node pointer to hold the head
-	var temp *node
+	var temp *Node
 
 	// Lock the mutex so nobody can modify the queue while we are removing
 	// the head of the queue
@@ -270,18 +283,33 @@ func (q *Queue) Peek() (interface{}, error) {
 		return nil, errorQueueEmpty
 	}
 
-	// Make a temporary pointer
-	var temp *node
-
 	// Lock the internal mutex to prevent someone pop-ing while we are peek-ing
 	q.mu.Lock()
 
-	// Set our temp pointer to be the head item in our queue
-	temp = q.root.next
-
 	// Unlock the mutex
-	q.mu.Unlock()
+	defer q.mu.Unlock()
 
 	// Return the the value in our temp node
-	return temp.value, nil
+	return q.root.next.value, nil
+}
+
+// Helper Methods
+// These methods are used internally.
+
+// clear updates the tail and root nodes to be the same, and points the root node
+// next to be itself. This is so we can easily
+func (q *Queue) clear() {
+
+	// Point the tail of our queue to the root node.
+	// The queue is needs to be empty, so we will want to add items to
+	// the root node
+	// This allows us to have simplified logic
+	// for the Queue.Enqueue and Queue.Append methods
+	q.tail = q.root
+
+	// Assign the next value on the root node to point to our tail
+	q.root.next = q.tail
+
+	// Update count to be 0
+	q.count = 0
 }
