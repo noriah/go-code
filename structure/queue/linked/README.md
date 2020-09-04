@@ -24,7 +24,7 @@ type Queue struct {
 For each element added to the queue, we create a new node, holding a value of our element. We point the new node to the queue root node. Then add it to the queue by updating the final node in the queue to point to this new one.
 
 ```golang
-var newNode = &{
+var newNode = &Node{
   next: root,
   value: "foobar",
 }
