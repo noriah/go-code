@@ -23,6 +23,9 @@ Golang code examples
   - [floats](example/number/float)
   - [binary](example/number/binary) -->
 
+### Goals
+
+To present various example of algorithms and complex data structures in golang. It is intended not for the code to be copied line-for-line, but for the coder to take the structure and modify it to fit the needs of their application.
 
 <!-- Links -->
 [self]: https://github.com/noriah/code
