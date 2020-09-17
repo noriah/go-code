@@ -19,30 +19,23 @@ var errorChannelClosed = errors.New("closed channel")
 // It uses channels internally to keep track of open slots in the array
 // so that we never have to shift, nor do we waste space
 type Queue struct {
-	// Mutex to lock when we are modifying things
-	mu sync.Mutex
-	// array to hold the data
-	array []interface{}
-	// Channel to hold our indexes for poping
-	popChannel chan int
-	// channel to hold our indexes for pushing
-	pushChannel chan int
-	// Size to keep track how many items are in the array
-	size int
-	// the next index to pop
-	nextPop int
-	// the next index at the end of the array we can push to
-	nextPush int
+	mu         sync.Mutex    // Mutex to lock when we are modifying things
+	array      []interface{} // array to hold the data
+	deqChannel chan int      // Channel to hold our indexes for Dequeue
+	enqChannel chan int      // channel to hold our indexes for Enqueue
+	size       int           // Size to keep track how many items are in the array
+	nextPop    int           // the next index to pop
+	nextPush   int           // the next index at the end of the array we can push to
 }
 
 // New returns a new Slice Queue
 func New() *Queue {
 	// Make a new queue
 	var newQueue = &Queue{
-		array:       make([]interface{}, defaultSliceSize),
-		popChannel:  make(chan int, defaultSliceSize),
-		pushChannel: make(chan int, defaultSliceSize),
-		nextPop:     -1,
+		array:      make([]interface{}, defaultSliceSize),
+		deqChannel: make(chan int, defaultSliceSize),
+		enqChannel: make(chan int, defaultSliceSize),
+		nextPop:    -1,
 	}
 
 	// Return the queue
@@ -62,23 +55,17 @@ func (q *Queue) expand() {
 
 	var newPushChannel = make(chan int, newCap)
 
-	var idx int
-
 	// For, or until we somehow break the loop
 	for {
 		// Select between options. Pick the first available
 		select {
-		case idx = <-q.popChannel:
-			newPopChannel <- idx
-
-		case idx = <-q.pushChannel:
-			newPushChannel <- idx
-
+		case newPopChannel <- q.deqChannel:
+		case newPushChannel <- q.enqChannel:
 		default:
-			close(q.popChannel)
-			q.popChannel = newPopChannel
-			close(q.pushChannel)
-			q.pushChannel = newPushChannel
+			close(q.deqChannel)
+			q.deqChannel = newPopChannel
+			close(q.enqChannel)
+			q.enqChannel = newPushChannel
 			return
 		}
 	}
@@ -113,9 +100,9 @@ func (q *Queue) Clear() {
 	for {
 		// Select between two options. Pick the first available
 		select {
-		case <-q.popChannel:
+		case <-q.deqChannel:
 
-		case <-q.pushChannel:
+		case <-q.enqChannel:
 
 		default:
 			return
@@ -142,7 +129,7 @@ func (q *Queue) Push(value interface{}) {
 
 	// Select an action
 	select {
-	case idx, ok = <-q.pushChannel:
+	case idx, ok = <-q.enqChannel:
 		if !ok {
 			panic("What happened here with push channel??")
 		}
@@ -157,7 +144,7 @@ func (q *Queue) Push(value interface{}) {
 	q.array[idx] = value
 
 	select {
-	case q.popChannel <- idx:
+	case q.deqChannel <- idx:
 
 	default:
 		panic("What??? full pop channel?")
@@ -189,7 +176,7 @@ func (q *Queue) Pop() (interface{}, error) {
 		// Select an action
 		select {
 		// Try to take an item from the channel, and let us know the close state
-		case idx, ok = <-q.popChannel:
+		case idx, ok = <-q.deqChannel:
 			// If the channel is not closed
 			if !ok {
 				panic("What happened here with push channel??")
@@ -200,7 +187,7 @@ func (q *Queue) Pop() (interface{}, error) {
 	}
 
 	select {
-	case q.pushChannel <- idx:
+	case q.enqChannel <- idx:
 		q.size--
 
 	default:
@@ -232,7 +219,7 @@ func (q *Queue) Peek() (interface{}, error) {
 		// Select an action
 		select {
 		// Try to take an item from the channel, and let us know the close state
-		case idx, ok = <-q.popChannel:
+		case idx, ok = <-q.deqChannel:
 			// If the channel is not closed
 			if !ok {
 				panic("What happened here with pop channel??")
