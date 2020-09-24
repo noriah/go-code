@@ -12,7 +12,7 @@ package prime
 // any previous prime, we have to go through all at-time-known primes to
 // find a single new prime.
 //
-// Time: Worst O(n**2)
+// Time: Worse than O(n**2), so don't use it.
 // Space: O(n)
 func GenerateCount(count int) []int {
 	if count < 1 {
