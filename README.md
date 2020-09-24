@@ -6,7 +6,7 @@
 
 Golang code ~~examples~~. just code.
 
-### Goals
+### Log what I have for you today!
 
 23/09/2020 - writing code we suppose.
 
