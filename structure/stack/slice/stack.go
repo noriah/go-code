@@ -4,6 +4,7 @@ package slice
 
 import (
 	"errors"
+	"fmt"
 	"sync"
 )
 
@@ -34,7 +35,9 @@ func New(values ...interface{}) *Stack {
 	newStack.array = make([]interface{}, defaultSliceSize)
 
 	// Add any values we may have been passed to the stack
-	newStack.Append(values)
+	newStack.Append(values...)
+
+	fmt.Println(newStack.array)
 
 	// Return the new stack
 	return newStack
@@ -84,7 +87,7 @@ func (s *Stack) Append(values ...interface{}) {
 	// logic below. We only want to check for a single value now and if so, push it.
 	if vLen < 2 {
 
-		// Check for length == 1
+		// Check for length == 1. If we had 0, then do nothing.
 		if vLen == 1 {
 
 			// If we only have one item in values, just push it.
@@ -126,7 +129,7 @@ func (s *Stack) Pop() (interface{}, error) {
 	s.count--
 
 	// return the value in our temp node
-	return s.array[s.count+1], nil
+	return s.array[s.count], nil
 }
 
 // Peek returns the value at the front of the stack.
@@ -144,7 +147,7 @@ func (s *Stack) Peek() (interface{}, error) {
 
 	defer s.mu.Unlock()
 
-	return s.array[s.count], nil
+	return s.array[s.count-1], nil
 }
 
 // Clear empties the stack.
